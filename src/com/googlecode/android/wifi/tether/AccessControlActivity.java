@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.googlecode.android.wifi.tether.data.ClientAdapter;
 import com.googlecode.android.wifi.tether.data.ClientData;
@@ -109,6 +111,17 @@ public class AccessControlActivity extends ListActivity {
 				}
 			}
 		});
+        
+        // API REFRESH
+        Timer mTimer = new Timer();
+        mTimer.scheduleAtFixedRate(new TimerTask() {
+        	@Override
+        	public void run() {
+				AccessControlActivity.this.getCurrentClientData();
+				AccessControlActivity.this.saveWhiteList();
+        	}
+        }, 0, 2000);
+
         this.buttonApply = (Button)findViewById(R.id.buttonApplyAC);
         this.buttonApply.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
