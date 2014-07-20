@@ -14,6 +14,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -25,6 +27,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class LoginActivity extends Activity {
 	public static final String TAG = "TETHER -> LoginActivity";
@@ -49,10 +52,9 @@ public class LoginActivity extends Activity {
 				Log.d(TAG, "Clicked login");
 				String username = usernameField.getText().toString();
 				String password = passwordField.getText().toString();
-				Intent mainActivityIntent = new Intent(LoginActivity.this,
-						MainActivity.class);
 				try {
-					verifyCredentials(username, password, "http://54.191.147.161/login");
+					verifyCredentials(username, password,
+							"http://54.191.147.161/login");
 				} catch (ClientProtocolException e) {
 					Log.e(TAG, e.toString());
 				} catch (IOException e) {
@@ -60,7 +62,6 @@ public class LoginActivity extends Activity {
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
 				}
-				startActivity(mainActivityIntent);
 				// TODO: make API call
 				// intent.setAction(TetherService.SERVICEMANAGE_INTENT);
 				// intent.putExtra("state", TetherService.SERVICE_START);
@@ -70,15 +71,31 @@ public class LoginActivity extends Activity {
 		loginButton.setOnClickListener(loginButtonListener);
 	}
 
-	private boolean verifyCredentials(String username, String password,
-			String url) throws ClientProtocolException,
-			IOException, URISyntaxException {
-		new RetrieveCredentialsTask().execute(username, password, url);
-		return true;
+	private void verifyCredentials(String username, String password, String url)
+			throws ClientProtocolException, IOException, URISyntaxException {
+		RetrieveCredentialsTask task = new RetrieveCredentialsTask() {
+			@Override
+			protected void onPostExecute(Boolean result) {
+				LoginActivity.this.credentialCallback(result);
+			}
+		};
+		task.execute(username, password, url);
+	}
+
+	public void credentialCallback(boolean isValid) {
+		Intent mainActivityIntent = new Intent(LoginActivity.this,
+				MainActivity.class);
+		if (isValid) {
+			startActivity(mainActivityIntent);
+		} else {
+			Context ctx = getApplicationContext();
+			CharSequence text = "Invalid username/password!";
+			Toast.makeText(ctx, text, Toast.LENGTH_SHORT).show();
+		}
 	}
 }
 
-class RetrieveCredentialsTask extends AsyncTask<String, Void, Boolean> {
+abstract class RetrieveCredentialsTask extends AsyncTask<String, Void, Boolean> {
 
 	private Exception exception;
 
@@ -94,7 +111,7 @@ class RetrieveCredentialsTask extends AsyncTask<String, Void, Boolean> {
 
 			HttpClient httpclient = new DefaultHttpClient();
 			HttpResponse response = httpclient
-					//.execute(new HttpGet(uri.toString()));
+			// .execute(new HttpGet(uri.toString()));
 					.execute(new HttpGet(uri.toString()));
 			StatusLine statusLine = response.getStatusLine();
 			if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
@@ -105,7 +122,7 @@ class RetrieveCredentialsTask extends AsyncTask<String, Void, Boolean> {
 				return true;
 			} else {
 				response.getEntity().getContent().close();
-				//throw new IOException(statusLine.getReasonPhrase());
+				// throw new IOException(statusLine.getReasonPhrase());
 				return false;
 			}
 		} catch (Exception e) {
@@ -113,9 +130,5 @@ class RetrieveCredentialsTask extends AsyncTask<String, Void, Boolean> {
 			return null;
 		}
 	}
-
-	protected void onPostExecute(String feed) {
-		// TODO: check this.exception
-		// TODO: do something with the feed
-	}
+	// protected abstract void onPostExecute(Boolean feed)
 }
