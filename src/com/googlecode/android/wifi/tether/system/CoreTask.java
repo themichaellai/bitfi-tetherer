@@ -13,6 +13,7 @@
 package com.googlecode.android.wifi.tether.system;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,9 +27,21 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import com.googlecode.android.wifi.tether.data.ClientData;
 
+import android.net.Uri;
 import android.util.Log;
 
 public class CoreTask {
@@ -91,8 +104,15 @@ public class CoreTask {
 				}
 			}
 	    }
-	    public ArrayList<String> get() {
-	    	return readLinesFromFile(DATA_FILE_PATH+"/conf/whitelist_mac.conf");
+	    public List<String> get() {
+	    	//return readLinesFromFile(DATA_FILE_PATH+"/conf/whitelist_mac.conf");
+	    	try {
+				return getMacsFromApi("<INSERT URL HERE>");
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	    }
 	}
 	
@@ -355,7 +375,42 @@ public class CoreTask {
     	}
     	return lines;
     }
+
+    protected List<String> getMacsFromApi(String url) throws ClientProtocolException, IOException {
+    	Uri uri = Uri.parse(url).buildUpon()
+			.build();
+
+		HttpClient httpclient = new DefaultHttpClient();
+		HttpResponse response = httpclient
+			.execute(new HttpGet(uri.toString()));
+		StatusLine statusLine = response.getStatusLine();
+		if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			response.getEntity().writeTo(out);
+			out.close();
+			String responseString = out.toString();
+			return parseJsonList(responseString);
+		} else {
+			response.getEntity().getContent().close();
+			// throw new IOException(statusLine.getReasonPhrase());
+			return new ArrayList<String>();
+		}
+    }
     
+    protected List<String> parseJsonList(String jsonString) {
+    	JSONArray array;
+	    List<String> res = new ArrayList<String>();
+		try {
+			array = new JSONArray(jsonString);
+		    for (int i = 0; i < array.length(); i++) {
+			    res.add(array.getString(i));
+		    }
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+    	return res;
+    }
+
     public boolean writeLinesToFile(String filename, String lines) {
 		OutputStream out = null;
 		boolean returnStatus = false;
