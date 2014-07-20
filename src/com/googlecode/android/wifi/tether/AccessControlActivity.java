@@ -111,16 +111,6 @@ public class AccessControlActivity extends ListActivity {
 				}
 			}
 		});
-        
-        // API REFRESH
-        Timer mTimer = new Timer();
-        mTimer.scheduleAtFixedRate(new TimerTask() {
-        	@Override
-        	public void run() {
-				AccessControlActivity.this.getCurrentClientData();
-				AccessControlActivity.this.saveWhiteList();
-        	}
-        }, 0, 2000);
 
         this.buttonApply = (Button)findViewById(R.id.buttonApplyAC);
         this.buttonApply.setOnClickListener(new OnClickListener() {

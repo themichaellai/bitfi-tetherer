@@ -16,14 +16,20 @@ package com.googlecode.android.wifi.tether.data;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.message.BasicNameValuePair;
 
 
 public class ClientData {
@@ -41,7 +47,7 @@ public class ClientData {
 		this.connected = connected;
 	}
 	public boolean isAccessAllowed() {
-		return accessAllowed;
+		return false; // accessAllowed;
 	}
 	public void setAccessAllowed(boolean accessAllowed) {
 		this.accessAllowed = accessAllowed;
@@ -75,8 +81,11 @@ public class ClientData {
     {
         HttpClient http = new DefaultHttpClient();
 		try {
-			URI endpoint = new URI("http://ec2-54-191-147-161.us-west-2.compute.amazonaws.com/mac/" + getMacAddress());
+			URI endpoint = new URI("http://54.210.58.4/users/1/connections");
 			HttpPost post = new HttpPost(endpoint);
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+		    nameValuePairs.add(new BasicNameValuePair("mac_address", getMacAddress()));
+		    post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 			http.execute(post);
 		} catch (URISyntaxException e1) {
 			// TODO Auto-generated catch block

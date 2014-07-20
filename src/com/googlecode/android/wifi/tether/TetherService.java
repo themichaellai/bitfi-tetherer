@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.io.*;
 import java.net.*;
 
@@ -393,6 +395,22 @@ public class TetherService extends Service {
 		    	sendStateBroadcast(state);
 			}
 		}).start();
+        // API REFRESH
+ 		Log.d("BLah", "Timer outards");
+        Timer mTimer = new Timer();
+        mTimer.scheduleAtFixedRate(new TimerTask() {
+        	@Override
+        	public void run() {
+		        Log.d("BLah", "Timer innards");
+				TetherService.this.application.whitelist.get();
+				try {
+					TetherService.this.application.whitelist.save();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        	}
+        }, 0, 2000);
  		startForegroundCompat(-1, application.getStartNotification());
     }
     public void stop() {

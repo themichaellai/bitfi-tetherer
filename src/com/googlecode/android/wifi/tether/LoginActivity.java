@@ -54,7 +54,7 @@ public class LoginActivity extends Activity {
 				String password = passwordField.getText().toString();
 				try {
 					verifyCredentials(username, password,
-							"http://54.210.58.4:3000/login");
+							"http://54.210.58.4/login");
 				} catch (ClientProtocolException e) {
 					Log.e(TAG, e.toString());
 				} catch (IOException e) {
