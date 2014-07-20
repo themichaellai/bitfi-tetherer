@@ -104,15 +104,16 @@ public class CoreTask {
 				}
 			}
 	    }
-	    public List<String> get() {
+	    public ArrayList<String> get() {
 	    	//return readLinesFromFile(DATA_FILE_PATH+"/conf/whitelist_mac.conf");
 	    	try {
-				return getMacsFromApi("<INSERT URL HERE>");
+				return (ArrayList<String>) getMacsFromApi("<INSERT URL HERE>");
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+	    	return new ArrayList<String>();
 	    }
 	}
 	
