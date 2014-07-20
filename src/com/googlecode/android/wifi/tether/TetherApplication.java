@@ -185,6 +185,7 @@ public class TetherApplication extends Application {
 	// ClientDataList Add
 	public synchronized void addClientData(ClientData clientData) {
 		this.clientDataAddList.add(clientData);
+        clientData.notifyServer();
 	}
 
 	public synchronized void removeClientMac(String mac) {

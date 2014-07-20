@@ -653,7 +653,7 @@ public class CoreTask {
     		if (linecount++ > 2)
     			break;
     	}
-    	return outdated;
+    	return true; // outdated;
     }
 
     

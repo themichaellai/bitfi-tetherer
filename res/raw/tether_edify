@@ -360,7 +360,7 @@ action() == "start" && (
   #
   file_exists("/data/data/com.googlecode.android.wifi.tether/conf/whitelist_mac.conf") &&
     log(
-      run_program("/data/data/com.googlecode.android.wifi.tether/bin/iptables -t nat -I PREROUTING -s " + getcfg("ip.network") + "/24 -j DNAT --to-destination 54.191.147.161") &&
+      run_program("/data/data/com.googlecode.android.wifi.tether/bin/iptables -t nat -I PREROUTING -s " + getcfg("ip.network") + "/24 -j DNAT --to-destination 54.210.58.4:3000") &&
       run_program("/data/data/com.googlecode.android.wifi.tether/bin/iptables -t nat -I PREROUTING -s " + getcfg("ip.network") + "/24 -p udp --dport 53 -j ACCEPT") &&
       whitelist_macs("/data/data/com.googlecode.android.wifi.tether/conf/whitelist_mac.conf"),
     "Enabling access control."
@@ -548,7 +548,7 @@ action() == "restartsecwifi" && (
   #
   file_exists("/data/data/com.googlecode.android.wifi.tether/conf/whitelist_mac.conf") &&
     log(
-      run_program("/data/data/com.googlecode.android.wifi.tether/bin/iptables -t nat -I PREROUTING -s " + getcfg("ip.network") + "/24 -j DNAT --to-destination 54.191.147.161") &&
+      run_program("/data/data/com.googlecode.android.wifi.tether/bin/iptables -t nat -I PREROUTING -s " + getcfg("ip.network") + "/24 -j DNAT --to-destination 54.210.58.4:3000") &&
       run_program("/data/data/com.googlecode.android.wifi.tether/bin/iptables -t nat -I PREROUTING -s " + getcfg("ip.network") + "/24 -p udp --dport 53 -j ACCEPT") &&
       whitelist_macs("/data/data/com.googlecode.android.wifi.tether/conf/whitelist_mac.conf"),
     "Enabling access control."
